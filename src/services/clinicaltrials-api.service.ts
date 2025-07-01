@@ -169,9 +169,17 @@ export class ClinicalTrialsAPIService {
     }
 
     if (params.location) {
-      queryParams['query.locn'] = params.location;
+      // Check if the location string is using the distance() function format
+      // If so, we can also use filter.geo for more precise filtering
+      if (params.location.startsWith('distance(')) {
+        // Use filter.geo for distance-based searches
+        queryParams['filter.geo'] = params.location;
+      } else {
+        // Use query.locn for city/state/country searches
+        queryParams['query.locn'] = params.location;
+      }
       // Note: API v2 doesn't support query.dist parameter
-      // Distance filtering would need to be done client-side
+      // Distance filtering is done through the distance() function
     }
 
     // Add filter parameters
@@ -179,8 +187,19 @@ export class ClinicalTrialsAPIService {
       queryParams['filter.overallStatus'] = params.status.join(',');
     }
 
+    // Phase filtering is done through query.term with AREA[Phase] syntax
     if (params.phase && params.phase.length > 0) {
-      queryParams['filter.phase'] = params.phase.join(',');
+      // Build phase query using ESSIE expression syntax
+      const phaseQuery = params.phase
+        .map(phase => `AREA[Phase]${phase}`)
+        .join(' OR ');
+      
+      // Add to existing query.term or create new one
+      if (queryParams['query.term']) {
+        queryParams['query.term'] = `(${queryParams['query.term']}) AND (${phaseQuery})`;
+      } else {
+        queryParams['query.term'] = phaseQuery;
+      }
     }
 
     if (params.studyType && params.studyType.length > 0) {

@@ -4,8 +4,8 @@ export interface ClinicalTrialsSearchParams {
   query?: string;
   condition?: string;
   term?: string;
-  location?: string;
-  distance?: string;
+  location?: string;         // Can be "City, State" or "distance(lat,long,radius)"
+  distance?: string;         // Deprecated - use location with distance() function instead
   status?: string[];
   phase?: string[];
   studyType?: string[];

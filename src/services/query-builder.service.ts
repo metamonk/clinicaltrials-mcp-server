@@ -165,30 +165,36 @@ export class QueryBuilderService {
   private static buildLocationString(location: QueryBuilderOptions['location']): string {
     if (!location) return '';
 
-    // If we have coordinates, use them
-    if (location.latitude && location.longitude) {
-      return `${location.latitude},${location.longitude}`;
+    // If we have coordinates AND distance, use distance function
+    // Format: distance(latitude,longitude,distance)
+    if (location.latitude && location.longitude && location.distance) {
+      return `distance(${location.latitude},${location.longitude},${location.distance}mi)`;
     }
 
-    // Otherwise build from city/state/country
+    // Otherwise use city/state/country search (more reliable than raw coordinates)
     const parts = [];
     if (location.city) parts.push(location.city);
     if (location.state) parts.push(location.state);
     if (location.country) parts.push(location.country);
 
+    // Return city/state/country string, or empty if no text location provided
     return parts.join(', ');
   }
 
   /**
    * Normalize phase names to API format
+   * Valid values: NA, EARLY_PHASE1, PHASE1, PHASE2, PHASE3, PHASE4
    */
   private static normalizePhases(phases: string[]): string[] {
     const phaseMap: Record<string, string> = {
+      '0': 'EARLY_PHASE1',
       '1': 'PHASE1',
       '2': 'PHASE2',
       '3': 'PHASE3',
       '4': 'PHASE4',
       'early': 'EARLY_PHASE1',
+      'early phase 1': 'EARLY_PHASE1',
+      'phase 0': 'EARLY_PHASE1',
       'phase 1': 'PHASE1',
       'phase 2': 'PHASE2',
       'phase 3': 'PHASE3',
@@ -196,7 +202,9 @@ export class QueryBuilderService {
       'phase i': 'PHASE1',
       'phase ii': 'PHASE2',
       'phase iii': 'PHASE3',
-      'phase iv': 'PHASE4'
+      'phase iv': 'PHASE4',
+      'n/a': 'NA',
+      'not applicable': 'NA'
     };
 
     return phases.map(phase => {
