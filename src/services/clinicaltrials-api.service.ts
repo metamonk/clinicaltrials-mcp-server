@@ -154,8 +154,9 @@ export class ClinicalTrialsAPIService {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const queryParams: Record<string, any> = {
       format: 'json',
-      pageSize: params.pageSize || 50,
-      pageNumber: params.pageNumber || 1
+      // Convert numeric parameters to strings as required by the API
+      pageSize: String(params.pageSize || 50),
+      pageNumber: String(params.pageNumber || 1)
     };
 
     // Add query parameters
