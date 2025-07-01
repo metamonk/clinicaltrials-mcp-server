@@ -4,10 +4,10 @@ import { getStudyDetailsInputSchema } from '../../../../../tools/get-study-detai
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { nctId: string } }
+  { params }: { params: Promise<{ nctId: string }> }
 ) {
   try {
-    const nctId = params.nctId;
+    const { nctId } = await params;
     const searchParams = request.nextUrl.searchParams;
     
     const input = {
