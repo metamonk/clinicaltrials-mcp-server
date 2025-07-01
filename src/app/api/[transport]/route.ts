@@ -81,16 +81,7 @@ const handler = createMcpHandler(
     // Use Redis URL if available, but don't require it
     redisUrl: redisUrl,
     basePath: '/api',
-    verboseLogs: true, // Enable verbose logging for debugging
-    // Add error handling for Redis connection failures
-    onError: (error: Error) => {
-      if (error.message.includes('Redis') || error.message.includes('ETIMEDOUT')) {
-        console.warn('Redis connection issue (non-fatal):', error.message);
-        // Don't throw - let MCP work without Redis
-      } else {
-        throw error;
-      }
-    }
+    verboseLogs: true // Enable verbose logging for debugging
   }
 );
 
