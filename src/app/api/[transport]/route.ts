@@ -1,4 +1,5 @@
 import { createMcpHandler } from '@vercel/mcp-adapter';
+import { toMCPError } from '../../../lib/mcp-errors';
 
 // Import tools
 import {
@@ -34,7 +35,9 @@ const handler = createMcpHandler(
       async (input) => {
         console.log('search_trials tool called with:', input);
         try {
-          const result = await searchTrialsHandler(input);
+          // Validate input with Zod schema
+          const validatedInput = searchTrialsInputSchema.parse(input);
+          const result = await searchTrialsHandler(validatedInput);
           return {
             content: [
               {
@@ -44,8 +47,9 @@ const handler = createMcpHandler(
             ]
           };
         } catch (error) {
-          console.error('Error in search_trials:', error);
-          throw error;
+          const mcpError = toMCPError(error);
+          console.error('Error in search_trials:', mcpError);
+          throw mcpError;
         }
       }
     );
@@ -58,7 +62,9 @@ const handler = createMcpHandler(
       async (input) => {
         console.log('get_study_details tool called with:', input);
         try {
-          const result = await getStudyDetailsHandler(input);
+          // Validate input with Zod schema
+          const validatedInput = getStudyDetailsInputSchema.parse(input);
+          const result = await getStudyDetailsHandler(validatedInput);
           return {
             content: [
               {
@@ -68,15 +74,16 @@ const handler = createMcpHandler(
             ]
           };
         } catch (error) {
-          console.error('Error in get_study_details:', error);
-          throw error;
+          const mcpError = toMCPError(error);
+          console.error('Error in get_study_details:', mcpError);
+          throw mcpError;
         }
       }
     );
 
     console.log('MCP Server initialized with 2 tools');
   },
-  {}, // empty serverOptions
+  {}, // empty serverOptions - metadata is set elsewhere
   {
     // Use Redis URL if available, but don't require it
     redisUrl: redisUrl,

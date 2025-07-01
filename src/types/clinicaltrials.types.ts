@@ -14,6 +14,7 @@ export interface ClinicalTrialsSearchParams {
   nctId?: string;
   pageSize?: number;
   pageNumber?: number;
+  pageToken?: string;
   fields?: string[];
   sortField?: string;
   sortOrder?: 'asc' | 'desc';

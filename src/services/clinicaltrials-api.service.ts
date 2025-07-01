@@ -155,8 +155,8 @@ export class ClinicalTrialsAPIService {
     const queryParams: Record<string, any> = {
       format: 'json',
       // Convert numeric parameters to strings as required by the API
-      pageSize: String(params.pageSize || 50),
-      pageNumber: String(params.pageNumber || 1)
+      pageSize: String(params.pageSize || 50)
+      // Note: API v2 uses pageToken for pagination, not pageNumber
     };
 
     // Add query parameters
@@ -205,6 +205,11 @@ export class ClinicalTrialsAPIService {
       queryParams.fields = params.fields.join(',');
     } else {
       queryParams.fields = this.defaultFields.join(',');
+    }
+
+    // Add pagination token if provided (API v2 uses cursor-based pagination)
+    if (params.pageToken) {
+      queryParams.pageToken = params.pageToken;
     }
 
     // Add sorting

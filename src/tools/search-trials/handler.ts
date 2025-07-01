@@ -1,4 +1,4 @@
-import { SearchTrialsOutput } from './schema';
+import { SearchTrialsInput, SearchTrialsOutput } from './schema';
 import { clinicalTrialsAPI } from '../../services/clinicaltrials-api.service';
 import { QueryBuilderService } from '../../services/query-builder.service';
 import { ClinicalTrialsError } from '../../types/clinicaltrials.types';
@@ -33,8 +33,7 @@ function toRad(deg: number): number {
  * Handler for the search_trials MCP tool
  */
 export async function searchTrialsHandler(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  input: any
+  input: SearchTrialsInput
 ): Promise<SearchTrialsOutput> {
   const startTime = Date.now();
 
@@ -98,8 +97,20 @@ export async function searchTrialsHandler(
 
       // Process locations and calculate distances
       const locations = contacts?.locations?.map(location => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const result: any = {
+        const result: {
+          facility?: string;
+          city?: string;
+          state?: string;
+          zip?: string;
+          country?: string;
+          status?: string;
+          distance?: number;
+          contact?: {
+            name?: string;
+            phone?: string;
+            email?: string;
+          };
+        } = {
           facility: location.facility,
           city: location.city,
           state: location.state,
@@ -215,16 +226,30 @@ export async function searchTrialsHandler(
       warnings.push('Limited trials found. Consider removing some filters or expanding search radius.');
     }
 
+    // Calculate pagination metadata
+    const pageNumber = input.pageNumber || 1;
+    const pageSize = input.pageSize || 20;
+    const totalPages = Math.ceil(searchResponse.totalCount / pageSize);
+    const hasNextPage = pageNumber < totalPages;
+    const hasPreviousPage = pageNumber > 1;
+
     return {
       success: true,
       totalCount: searchResponse.totalCount,
-      pageNumber: input.pageNumber || 1,
-      pageSize: input.pageSize || 20,
+      pageNumber,
+      pageSize,
       trials,
       searchMetadata: {
         executionTime,
         query: searchParams,
         warnings
+      },
+      pagination: {
+        hasNextPage,
+        hasPreviousPage,
+        totalPages,
+        nextPageNumber: hasNextPage ? pageNumber + 1 : undefined,
+        previousPageNumber: hasPreviousPage ? pageNumber - 1 : undefined
       }
     };
 
@@ -245,6 +270,11 @@ export async function searchTrialsHandler(
         searchMetadata: {
           executionTime,
           warnings: [`Search failed: ${error.message}`]
+        },
+        pagination: {
+          hasNextPage: false,
+          hasPreviousPage: false,
+          totalPages: 0
         }
       };
     }
@@ -260,6 +290,11 @@ export async function searchTrialsHandler(
       searchMetadata: {
         executionTime,
         warnings: ['An unexpected error occurred during search']
+      },
+      pagination: {
+        hasNextPage: false,
+        hasPreviousPage: false,
+        totalPages: 0
       }
     };
   }

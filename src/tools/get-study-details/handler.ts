@@ -1,4 +1,4 @@
-import { GetStudyDetailsOutput } from './schema';
+import { GetStudyDetailsInput, GetStudyDetailsOutput } from './schema';
 import { clinicalTrialsAPI } from '../../services/clinicaltrials-api.service';
 import { ClinicalTrialsError } from '../../types/clinicaltrials.types';
 
@@ -53,8 +53,7 @@ function parseEligibilityCriteria(criteria: string): {
  * Handler for the get_study_details MCP tool
  */
 export async function getStudyDetailsHandler(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  input: any
+  input: GetStudyDetailsInput
 ): Promise<GetStudyDetailsOutput> {
   try {
     console.log('Get study details handler called for:', input.nctId);

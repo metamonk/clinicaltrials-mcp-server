@@ -161,6 +161,15 @@ export const searchTrialsOutputSchema = z.object({
     warnings: z.array(z.string()).optional()
   }).optional(),
   
+  // Pagination metadata
+  pagination: z.object({
+    hasNextPage: z.boolean(),
+    hasPreviousPage: z.boolean(),
+    totalPages: z.number(),
+    nextPageNumber: z.number().optional(),
+    previousPageNumber: z.number().optional()
+  }).optional(),
+  
   // Error information (if applicable)
   error: z.string().optional(),
   errorCode: z.string().optional()
