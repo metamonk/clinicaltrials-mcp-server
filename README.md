@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ClinicalTrials.gov MCP Server
 
-## Getting Started
+A Vercel-hosted MCP (Model Context Protocol) server that provides AI agents with structured access to ClinicalTrials.gov data.
 
-First, run the development server:
+## Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+This MCP server enables AI agents to search and retrieve clinical trial information from ClinicalTrials.gov through standardized tools. It's built with Next.js and deployed on Vercel, following the MCP protocol for AI tool integration.
+
+## Features
+
+- **Search Clinical Trials**: Advanced search with filtering by conditions, location, biomarkers, phases, and more
+- **Get Study Details**: Retrieve comprehensive information about specific trials
+- **Location-based Search**: Find trials near specific coordinates with distance calculations
+- **Biomarker Matching**: Search for trials targeting specific genetic markers
+- **Real-time Data**: Direct integration with ClinicalTrials.gov API
+
+## Available Tools
+
+### 1. `search_trials`
+
+Search for clinical trials with advanced filtering options:
+
+```json
+{
+  "conditions": ["breast cancer"],
+  "location": {
+    "city": "New York",
+    "state": "NY",
+    "distance": 50
+  },
+  "biomarkers": [
+    {"name": "HER2", "status": "positive"}
+  ],
+  "phases": ["2", "3"],
+  "recruitingOnly": true
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. `get_study_details`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Get detailed information about a specific trial:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```json
+{
+  "nctId": "NCT12345678",
+  "includeEligibilityParsed": true
+}
+```
 
-## Learn More
+## Local Development
 
-To learn more about Next.js, take a look at the following resources:
+1. Install dependencies:
+   ```bash
+   pnpm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Run the development server:
+   ```bash
+   pnpm dev
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Test the MCP server:
+   ```bash
+   node scripts/test-client.mjs
+   ```
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Deploy to Vercel:
+   ```bash
+   vercel
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2. Set up Redis database in Vercel dashboard
+
+3. Configure environment variables:
+   - `REDIS_URL` - Redis connection string
+
+## Integration with AI Agents
+
+### For OncoBot Integration
+
+Update OncoBot to use this MCP server by adding a new tool that connects to:
+- SSE endpoint: `YOUR_VERCEL_URL/api/sse`
+- HTTP endpoint: `YOUR_VERCEL_URL/api/mcp`
+
+### For GitHub Copilot
+
+Add to VS Code settings:
+```json
+{
+  "github.copilot.chat.mcpServers": {
+    "clinicaltrials": {
+      "command": "http",
+      "args": ["YOUR_VERCEL_URL/api/mcp"]
+    }
+  }
+}
+```
+
+## Architecture
+
+- **Next.js App Router**: Modern React framework
+- **Vercel MCP Adapter**: Official MCP integration
+- **ClinicalTrials.gov API**: Direct integration
+- **Zod Validation**: Type-safe input/output schemas
+- **Redis**: State management for MCP sessions
+
+## API Rate Limits
+
+This server respects ClinicalTrials.gov API rate limits. Please be mindful of usage to ensure continued access for all users.
+
+## License
+
+MIT
