@@ -170,9 +170,8 @@ export class ClinicalTrialsAPIService {
 
     if (params.location) {
       queryParams['query.locn'] = params.location;
-      if (params.distance) {
-        queryParams['query.dist'] = params.distance;
-      }
+      // Note: API v2 doesn't support query.dist parameter
+      // Distance filtering would need to be done client-side
     }
 
     // Add filter parameters
