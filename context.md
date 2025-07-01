@@ -1,16 +1,6 @@
-@upstash/redis option:
-
-import { Redis } from '@upstash/redis'
-const redis = new Redis({
-  url: 'https://fond-peacock-44146.upstash.io',
-  token: 'AaxyAAIjcDFjMTQwMDc4MjU5YTU0MDViODRmNzE4NzRlMzk1MTFmMXAxMA',
-})
-
-await redis.set("foo", "bar");
-await redis.get("foo");
-
-ioredis option: 
-import Redis from "ioredis"
-
-const client = new Redis("rediss://default:AaxyAAIjcDFjMTQwMDc4MjU5YTU0MDViODRmNzE4NzRlMzk1MTFmMXAxMA@fond-peacock-44146.upstash.io:6379");
-await client.set('foo', 'bar');
+./src/lib/redis-bridge.ts
+5:7  Error: 'upstashClient' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+38:27  Error: 'handler' is defined but never used.  @typescript-eslint/no-unused-vars
+38:36  Error: The `Function` type accepts any function-like value.
+Prefer explicitly defining any function parameters and return type.  @typescript-eslint/no-unsafe-function-type
+62:12  Error: 'error' is defined but never used.  @typescript-eslint/no-unused-vars

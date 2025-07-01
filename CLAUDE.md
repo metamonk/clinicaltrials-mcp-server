@@ -95,3 +95,12 @@ Required for production:
 - Path alias: `@/*` maps to `./src/*`
 - Target: ES2017
 - Module resolution: bundler
+
+## Linting Rules
+
+When writing or modifying code, follow these ESLint rules:
+- **No unused variables**: Remove or use all declared variables (`@typescript-eslint/no-unused-vars`)
+- **No explicit any**: Use proper types instead of `any` (`@typescript-eslint/no-explicit-any`)
+- **No unsafe Function type**: Use specific function signatures like `(event: string) => void` instead of `Function` (`@typescript-eslint/no-unsafe-function-type`)
+- **Prefer const**: Use `const` for variables that are never reassigned
+- **No console in production**: Use proper logging utilities for production code
